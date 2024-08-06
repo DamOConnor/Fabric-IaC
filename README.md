@@ -1,5 +1,4 @@
 # Fabric-IaC
-This repo is under construction
 
 <img src="images/Fabric_256.svg" alt="Fabric Image" style="margin: 10px;" width="100" align="right"/>
 
@@ -7,10 +6,11 @@ This repo is under construction
 
 ## Introduction
 
-This repo will create an F2 **Fabric Capacity** and a **Logic App** to pause the Fabric Capacity in the UK South region.  Fabric SKU and region can be altered if required.
+This repo will create a resource group, an F2 **Fabric Capacity** and a **Logic App** to pause the Fabric Capacity in the UK South region.  Fabric SKU and region can be altered in the Bicep if required.
 
 ![Fabric IaC](images/fabriciac.png)
 
+The code has been built with external subscriptions in mind but could be adapted for any Azure subscription.
 
 > [!NOTE]
 > The Bicep template (`main.bicep`) contains code to make sure Azure resource names are unique.  If you run the template multiple times you will get multiple resource groups and Fabric Capacities.  Consider deleting resource groups created in error.  
@@ -18,6 +18,15 @@ This repo will create an F2 **Fabric Capacity** and a **Logic App** to pause the
 > If you want to redeploy to the same resource group and keep the other resources, simply override the `uniqueSuffix` in `main.bicep`.
 
 
+## Prerequisites
+- Azure Subscription
+- Resource Providers enabled for:
+  - Microsoft.Fabric
+  - Microsoft.Logic
+
+See [resourceproviders.ps](utils/resourceproviders.ps) for code to enable these resource providers.
+
+**NB** Fabric is not currently available in Microsoft Non-prod / fdpo subscriptions.
 
 Some content sourced from:  
 - https://github.com/murggu/fabric-iac
