@@ -21,6 +21,7 @@ The code has been built with external subscriptions in mind but could be adapted
 ## Contents
 - [Prerequisites](#Prerequisites)
 - [Steps](#Steps)
+- [Completed Deployment](#Completed%20Deployment)
 - [Bicep Visualizer](#Bicep%20Visualizer)
 - [Clone this repo](#Clone%20this%20repo)
 
@@ -41,10 +42,16 @@ Some content sourced from:
 
 ## Steps
 
-1. [Login to Azure CLI:](Login%20to%20Azure%20CLI.md) in Visual Studio Code:
-- Open VSCode
-- Open a Terminal
-- Enter the following text:
+1. [Login to Azure CLI](Login%20to%20Azure%20CLI.md) either via Azure Cloud Shell or Visual Studio Code.
+
+- In VSCode:
+  - Open a Terminal (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>'</kbd>)
+
+- In Cloud Shell:
+  - Start a session
+
+
+Enter the following text:
 
 ```
 az login --tenant <your-tenant-id>
@@ -77,15 +84,22 @@ Set the parameters `<your-tenant-id>`, `<your-subscription-id>` based on the ten
 - Select the resource group just deployed
 - Select the `arm` API connection
 - In the API Connection blade:
-- Click **General > Edit API Connection**
-- Click **Authorize**
-- Click **Save**
+  - Click **General > Edit API Connection**
+  - Click **Authorize**
+  - Click **Save**
 
-![image](images/authoriseapi.png)
+![Authorise API](images/authoriseapi.png)
 
 5. Now go to the Logic App and run it.  It should complete successfully and pause the Fabric Capacity.
-6. Optionally resume the capacity if you are going to work with it now.
+6. Optionally resume the capacity if you plan to work with it now.
 
+
+### Completed Deployment
+A successfully completed deployment should look similar to this:
+
+![Deployed Resources](images/deployedresources.png)
+
+**NB** Your 5-character suffix will be different.
 
 ### Bicep Visualizer
 The deployed resources should look like this:
