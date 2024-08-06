@@ -18,11 +18,18 @@ The code has been built with external subscriptions in mind but could be adapted
 > If you want to redeploy to the same resource group and keep the other resources, simply override the `uniqueSuffix` in `main.bicep`.
 
 
+## Contents
+- [Prerequisites](#Prerequisites)
+- [Steps](#Steps)
+- [Bicep Visualizer](#Bicep%20Visualizer)
+- [Clone this repo](#Clone%20this%20repo)
+
+
 ## Prerequisites
 - Azure Subscription
 - Resource Providers enabled for:
-  - Microsoft.Fabric
-  - Microsoft.Logic
+  - `Microsoft.Fabric`
+  - `Microsoft.Logic`
 
 See [resourceproviders.ps](utils/resourceproviders.ps) for code to enable these resource providers.
 
