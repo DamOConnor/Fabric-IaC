@@ -5,20 +5,17 @@ This repo is under construction
 
 ![level](https://img.shields.io/badge/Microsoft%20Fabric-IaC-green)
 
-> [!NOTE]
-> The Bicep template (`main.bicep`) contains code to make sure Azure resource names are unique.  If you run the template multiple times you will get multiple resource groups and Fabric Capacities.  Consider deleting resource groups created in error.  
-
-> If you want to redeploy to the same resource group and keep the other resources, simply override the `uniqueSuffix` in `main.bicep`.
-
-
--
--
-
 ## Introduction
 
 This repo will create an F2 Fabric Capacity and Logic App to pause it in UK South.  Fabric SKU and region can be altered if required.
 
 ![Bicep Visualizer](images/bicepvisualizer.png)
+
+> [!NOTE]
+> The Bicep template (`main.bicep`) contains code to make sure Azure resource names are unique.  If you run the template multiple times you will get multiple resource groups and Fabric Capacities.  Consider deleting resource groups created in error.  
+
+> If you want to redeploy to the same resource group and keep the other resources, simply override the `uniqueSuffix` in `main.bicep`.
+
 
 
 Some content sourced from:  
@@ -72,24 +69,9 @@ Set the parameters `<your-tenant-id>`, `<your-subscription-id>` based on the ten
 5. Now go to the Logic App and run it.  It should complete successfully and pause the Fabric Capacity.
 6. Optionally resume the capacity if you are going to work with it now.
 
-## Hints and tips
 
-- if you deploy the template but never authorise the API Connection, the Fabric Capacity will never pause.  Either pause the capacity manually or authorise the connection.
-
-### Convert an ARM template to bicep
-
-1. Export the ARM template from the Azure portal
-2. Run the following code to decompile it:
+### Clone this repo
 
 ```
-az bicep decompile --file main.json
+git clone https://github.com/DamOConnor/Fabric-IaC
 ```
-
-See here for more info: https://stackoverflow.com/questions/69354469/is-there-a-way-to-generate-a-bicep-file-for-an-existing-azure-resource
-
-
-
-## Steps for migrating workspaces from one sub to another
-1. Create new external Azure subscription
-2. Add all old workspaces to github repos
-3. Create new Fabric capacity in new subscription
