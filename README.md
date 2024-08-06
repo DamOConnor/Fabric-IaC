@@ -42,7 +42,7 @@ Some content sourced from:
 
 ## Steps
 
-1. [Login to Azure CLI](Login%20to%20Azure%20CLI.md) either via Azure Cloud Shell or Visual Studio Code.
+1. Login to the Azure CLI either via [Azure Cloud Shell](https://azure.microsoft.com/en-us/get-started/azure-portal/cloud-shell/) or [Visual Studio Code](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli).
 
 - In VSCode:
   - Open a Terminal (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>'</kbd>)
@@ -61,6 +61,9 @@ az login --tenant <your-tenant-id>
 ```
 az login --use-device-code
 ```
+
+- copy the link (normally https://microsoft.com/devicelogin) and paste it into the browser profile you want to use
+- copy the code and paste it into the browser when prompted
 
 
 2. Set the subscription:
@@ -94,20 +97,20 @@ Set the parameters `<your-tenant-id>`, `<your-subscription-id>` based on the ten
 6. Optionally resume the capacity if you plan to work with it now.
 
 
-### Completed Deployment
+## Completed Deployment
 A successfully completed deployment should look similar to this:
 
 ![Deployed Resources](images/deployedresources.png)
 
 **NB** Your 5-character suffix will be different.
 
-### Bicep Visualizer
+## Bicep Visualizer
 The deployed resources should look like this:
 
 ![Bicep Visualizer](images/bicepvisualizer.png)
 
 
-### Clone this repo
+## Clone this repo
 
 ```
 git clone https://github.com/DamOConnor/Fabric-IaC
