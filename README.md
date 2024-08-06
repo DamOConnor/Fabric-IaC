@@ -1,4 +1,4 @@
-# Fabric-IaC-UKS
+# Fabric-IaC
 This repo is under construction
 
 <img src="images/Fabric_256.svg" alt="Fabric Image" style="margin: 10px;" width="100" align="right"/>
@@ -6,14 +6,20 @@ This repo is under construction
 ![level](https://img.shields.io/badge/Microsoft%20Fabric-IaC-green)
 
 > [!NOTE]
-> The Bicep template (`main.bicep`) contains code to make sure Azure resource names are unique.  If you run the template multiple times you will get multiple resource groups and Fabric Capacities.  Consider deleting resource groups created in error.
+> The Bicep template (`main.bicep`) contains code to make sure Azure resource names are unique.  If you run the template multiple times you will get multiple resource groups and Fabric Capacities.  Consider deleting resource groups created in error.  
+
+> If you want to redeploy to the same resource group and keep the other resources, simply override the `uniqueSuffix` in `main.bicep`.
+
 
 -
 -
 
-## Work in progress
+## Introduction
 
 This repo will create an F2 Fabric Capacity and Logic App to pause it in UK South.  Fabric SKU and region can be altered if required.
+
+![Bicep Visualizer](images/bicepvisualizer.png)
+
 
 Some content sourced from:  
 - https://github.com/murggu/fabric-iac
