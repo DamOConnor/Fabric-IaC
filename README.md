@@ -49,6 +49,7 @@ Some content sourced from:
 
 - In Cloud Shell:
   - Start a session
+  - Proceed to the `az deployment ...` step
 
 
 Enter the following text:
