@@ -2,8 +2,15 @@
 
 targetScope = 'subscription'
 
+@description('The admin email - used in the authorisation for the Logic App')
+param adminEmail string
+
+@description('Unique guid - to help make resource names (like Fabric Capacity names) unique')
+param guid string = newGuid()
+var uniqueSuffix = toLower(substring(guid, 0, 5))
+
 @description('The location for all resources deployed in this template')
-param location string = 'uksouth'
+param location string
 
 //@description('The core name that will be used for resources')
 //param prefix string = 'general'
@@ -13,13 +20,6 @@ param location string = 'uksouth'
 
 @description('The Fabric F-SKU size, eg F2, F64 etc')
 param sku string = 'F2'
-
-@description('The admin email - used in the authorisation for the Logic App')
-param adminEmail string
-
-@description('Unique guid - to help make resource names (like Fabric Capacity names) unique')
-param guid string = newGuid()
-var uniqueSuffix = toLower(substring(guid, 0, 5))
 
 // Helper variables for resource names
 //var baseName = '${prefix}-${postfix}${uniqueSuffix}'
