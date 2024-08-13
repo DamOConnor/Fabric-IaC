@@ -28,7 +28,7 @@ resource arm_res 'Microsoft.Web/connections@2016-06-01' = {
       description: 'Azure Resource Manager exposes the APIs to manage all of your Azure resources.'
       iconUri: 'https://connectoricons-prod.azureedge.net/releases/v1.0.1685/1.0.1685.3700/${connections_arm_name}/icon.png'
       brandColor: '#003056'
-      id: '/subscriptions/${subscriptionId}/providers/Microsoft.Web/locations/uksouth/managedApis/${connections_arm_name}'
+      id: '/subscriptions/${subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/${connections_arm_name}'
       type: 'Microsoft.Web/locations/managedApis'
     }
     testLinks: []
