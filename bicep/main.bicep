@@ -61,6 +61,7 @@ module arm_mod './arm.bicep' = {
   scope: resourceGroup(rg_res.name)
   params: {
     adminEmail: adminEmail
+    location: location
     subscriptionId: subscription().subscriptionId
     tenantId: subscription().tenantId   
   }

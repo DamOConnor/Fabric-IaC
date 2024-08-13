@@ -1,11 +1,12 @@
 param adminEmail string
 param connections_arm_name string = 'arm'
+param location string
 param subscriptionId string
 param tenantId string
 
 resource arm_res 'Microsoft.Web/connections@2016-06-01' = {
   name: connections_arm_name
-  location: 'uksouth'
+  location: location
   kind: 'V1'
   properties: {
     displayName: adminEmail
