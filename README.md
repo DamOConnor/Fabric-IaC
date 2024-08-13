@@ -80,9 +80,14 @@ az account set --subscription <your-subscription-id>
 az deployment sub create --location <location> --template-file bicep/main.bicep
 ```
 
-Set the parameters `<your-tenant-id>`, `<your-subscription-id>` based on the tenant and subscription you wish to deploy to.  Set `<location>` with the desired Azure region (e.g., uksouth).
+- Optionally give the deployment a name if you want to deploy multiple times:
+```
+az deployment sub create --location <location> --template-file bicep/main.bicep --name dep-uksouth01
+```
 
-Enter the admin email for the subscription when prompted.  When the deployment completes successfully go to step 4.
+Set the parameters `<your-tenant-id>`, `<your-subscription-id>` based on the tenant and subscription you wish to deploy to.  The location parameter here is the location for the deployment metadata.  Keep it in line with the intended Azure region (eg uksouth, francecentral etc).
+
+Enter the admin email for the subscription and location when prompted.  When the deployment completes successfully go to step 4.
 
 4. Authorise the arm connection
 - Go to the Azure portal (https://portal.azure.com)
