@@ -129,6 +129,6 @@ A successfully completed deployment should look similar to this:
 **NB** Your 5-character suffix will be different.
 
 ## Bicep Visualizer
-The deployed resources should look like this:
+This the Bicep Visualizer view of the deployed resources:
 
 ![Bicep Visualizer](images/bicepvisualizer.png)
