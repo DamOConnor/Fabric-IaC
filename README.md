@@ -44,13 +44,13 @@ Some content sourced from:
 
 1. Login to the Azure CLI either via [Azure Cloud Shell](https://azure.microsoft.com/en-us/get-started/azure-portal/cloud-shell/) or [Visual Studio Code](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli).
 
-- In VSCode:
-  - Open a Terminal (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>'</kbd>)
 
-- In Cloud Shell:
-  - Start a session
-  - Proceed to the `az deployment ...` step
-
+### Instructions for VS Code
+- clone the repo:
+```PowerShell
+git clone https://github.com/DamOConnor/Fabric-IaC
+```
+  - open a Terminal (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>'</kbd>)
 
 Enter the following text:
 
@@ -58,7 +58,7 @@ Enter the following text:
 az login --tenant <your-tenant-id>
 ```
 
-- Optionally consider using a device code if that does not work:
+- optionally consider using a device code if that does not work:
 ```
 az login --use-device-code
 ```
@@ -67,14 +67,32 @@ az login --use-device-code
 - copy the code and paste it into the browser when prompted
 
 
-2. Set the subscription:
+- set the subscription:
 
 ```
 az account set --subscription <your-subscription-id>
 ```
 
+- go to Step 2.
 
-3. Deploy the Bicep file:
+### Instructions for Cloud Shell
+
+- start a `PowerShell` session
+- clone the repo:
+```PowerShell
+git clone https://github.com/DamOConnor/Fabric-IaC
+```
+  - change the directory:
+```PowerShell
+cd ./Fabric-IaC/
+```  
+
+![Cloud Shell](images/cloudshell.png)
+
+Go to Step 2.
+
+
+2. Deploy the Bicep file:
 
 ```
 az deployment sub create --location <location> --template-file bicep/main.bicep
@@ -87,9 +105,9 @@ az deployment sub create --location <location> --template-file bicep/main.bicep 
 
 Set the parameters `<your-tenant-id>`, `<your-subscription-id>` based on the tenant and subscription you wish to deploy to.  The location parameter here is the location for the deployment metadata.  Keep it in line with the intended Azure region (eg uksouth, francecentral etc).
 
-Enter the admin email for the subscription and location when prompted.  When the deployment completes successfully go to step 4.
+Enter the admin email for the subscription and location when prompted.  When the deployment completes successfully go to step 3.
 
-4. Authorise the arm connection
+3. Authorise the arm connection
 - Go to the Azure portal (https://portal.azure.com)
 - Select the resource group just deployed
 - Select the `arm` API connection
@@ -100,8 +118,8 @@ Enter the admin email for the subscription and location when prompted.  When the
 
 ![Authorise API](images/authoriseapi.png)
 
-5. Now go to the Logic App and run it.  It should complete successfully and pause the Fabric Capacity.
-6. Optionally resume the capacity if you plan to work with it now.
+4. Now go to the Logic App and run it.  It should complete successfully and pause the Fabric Capacity.
+5. Optionally resume the capacity if you plan to work with it now.
 
 
 ## Completed Deployment
@@ -115,10 +133,3 @@ A successfully completed deployment should look similar to this:
 The deployed resources should look like this:
 
 ![Bicep Visualizer](images/bicepvisualizer.png)
-
-
-## Clone this repo
-
-```
-git clone https://github.com/DamOConnor/Fabric-IaC
-```
