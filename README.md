@@ -32,7 +32,7 @@ The code has been built with external subscriptions in mind but could be adapted
   - `Microsoft.Fabric`
   - `Microsoft.Logic`
 
-See [resourceproviders.ps](utils/resourceproviders.ps) for code to enable these resource providers.
+See [resourceproviders.ps1](utils/resourceproviders.ps1) for code to enable these resource providers.
 
 **NB** Fabric is not currently available in Microsoft Non-prod / fdpo subscriptions.
 
