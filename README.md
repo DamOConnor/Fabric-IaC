@@ -78,7 +78,7 @@ az account set --subscription <your-subscription-id>
 
 ### Instructions for Cloud Shell
 
-- start a `PowerShell` session
+- start a `PowerShell` or `bash` session
 - clone the repo:
 ```PowerShell
 git clone https://github.com/DamOConnor/Fabric-IaC
