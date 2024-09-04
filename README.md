@@ -73,7 +73,7 @@ az login --use-device-code
 az account set --subscription <your-subscription-id>
 ```
 
-- Set the parameters `<your-tenant-id>`, `<your-subscription-id>` based on the tenant and subscription you wish to deploy to.  The location parameter here is the location for the deployment metadata.  Keep it in line with the intended Azure region (eg uksouth, francecentral etc).
+- Set the parameters `<your-tenant-id>`, `<your-subscription-id>` based on the tenant and subscription you wish to deploy to.
 - go to Step 2.
 
 ### Instructions for Cloud Shell
@@ -104,7 +104,9 @@ az deployment sub create --location <location> --template-file bicep/main.bicep
 az deployment sub create --location <location> --template-file bicep/main.bicep --name dep-uksouth01
 ```
 
-Enter the admin email for the subscription and location when prompted.  When the deployment completes successfully go to step 3.
+- Set the parameter `<location>` in line with the intended Azure region (eg uksouth, francecentral etc) but note this argument is just the location of the deployment metadata.
+
+- Enter the admin email for the subscription and location when prompted.  When the deployment completes successfully go to step 3.
 
 3. Authorise the arm connection
 - Go to the Azure portal (https://portal.azure.com)
