@@ -1,5 +1,3 @@
-// This is the most basic Logic App - it doesn't even check to see if the Fabric Capacity is already suspended.
-// !!TODO add a check to see if the Fabric Capacity is already suspended before attempting to suspend it.
 param fabricCapacityName string
 param location string
 param logicAppName string
