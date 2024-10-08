@@ -1,28 +1,41 @@
+// Parameters
+@description('The name of the Fabric Capacity')
 param fabricCapacityName string
+
+@description('The location where the resources will be deployed')
 param location string
+
+@description('The name of the Logic App')
 param logicAppName string
+
+@description('The name of the resource group')
 param resourceGroupName string
+
+@description('The subscription ID where the resources will be deployed')
 param subscriptionId string
+
+@description('The external ID for the ARM connection')
 param connections_arm_externalid string = '/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.Web/connections/arm'
 
+// Logic App resource definition
 resource logicApp_res 'Microsoft.Logic/workflows@2019-05-01' = {
   name: logicAppName
   location: location
   properties: {
-    state: 'Enabled'
+    state: 'Enabled' // The state of the Logic App
     definition: {
-      '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
-      contentVersion: '1.0.0.0'
+      '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#' // Schema for the Logic App definition
+      contentVersion: '1.0.0.0' // Version of the Logic App definition
       parameters: {
         '$connections': {
-          defaultValue: {}
-          type: 'Object'
+          defaultValue: {} // Default value for connections parameter
+          type: 'Object' // Type of the connections parameter
         }
       }
       triggers: {
         Recurrence: {
           recurrence: {
-            interval: 1
+            interval: 1 // Interval for the recurrence trigger
             frequency: 'Day'
             timeZone: 'GMT Standard Time'
             schedule: {
