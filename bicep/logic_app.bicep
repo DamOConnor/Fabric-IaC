@@ -47,7 +47,7 @@ resource logicApp_res 'Microsoft.Logic/workflows@2019-05-01' = {
         }
       }
       actions: {
-        Invoke_resource_operation: {
+        Read_status_of_Fabric_Capacity: {
           runAfter: {}
           type: 'ApiConnection'
           inputs: {
@@ -56,12 +56,52 @@ resource logicApp_res 'Microsoft.Logic/workflows@2019-05-01' = {
                 name: '@parameters(\'$connections\')[\'arm\'][\'connectionId\']'
               }
             }
-            method: 'post'
-            path: '/subscriptions/@{encodeURIComponent(\'${subscriptionId}\')}/resourcegroups/@{encodeURIComponent(\'${resourceGroupName}\')}/providers/@{encodeURIComponent(\'Microsoft.Fabric\')}/@{encodeURIComponent(\'capacities/${fabricCapacityName}\')}/@{encodeURIComponent(\'suspend\')}'
+            method: 'get'
+            path: '/subscriptions/@{encodeURIComponent(\'${subscriptionId}\')}/resourcegroups/@{encodeURIComponent(\'${resourceGroupName}\')}/providers/@{encodeURIComponent(\'Microsoft.Fabric\')}/@{encodeURIComponent(\'capacities/${fabricCapacityName}\')}'
             queries: {
               'x-ms-api-version': '2023-11-01'
             }
           }
+        }
+        Condition_Pause_Fabric_Capacity_if_not_Paused: {
+          actions: {
+            Invoke_resource_operation: {
+              type: 'ApiConnection'
+              inputs: {
+                host: {
+                  connection: {
+                    name: '@parameters(\'$connections\')[\'arm\'][\'connectionId\']'
+                  }
+                }
+                method: 'post'
+                path: '/subscriptions/@{encodeURIComponent(\'${subscriptionId}\')}/resourcegroups/@{encodeURIComponent(\'${resourceGroupName}\')}/providers/@{encodeURIComponent(\'Microsoft.Fabric\')}/@{encodeURIComponent(\'capacities/${fabricCapacityName}\')}/@{encodeURIComponent(\'suspend\')}'
+                queries: {
+                  'x-ms-api-version': '2023-11-01'
+                }
+              }
+            }
+          }
+          runAfter: {
+            Read_status_of_Fabric_Capacity: [
+              'Succeeded'
+            ]
+          }
+          else: {
+            actions: {}
+          }
+          expression: {
+            and: [
+              {
+                not: {
+                  equals: [
+                    '@body(\'Read_status_of_Fabric_Capacity\')?[\'properties\']?[\'state\']'
+                    'Paused'
+                  ]
+                }
+              }
+            ]
+          }
+          type: 'If'
         }
       }
       outputs: {}
