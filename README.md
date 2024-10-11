@@ -95,16 +95,16 @@ Go to Step 2.
 
 2. Deploy the Bicep file:
 
+- Set the parameter `<location>` in line with the intended Azure region (eg uksouth, francecentral etc) but note this argument is just the location of the deployment metadata.
+
 ```
 az deployment sub create --location <location> --template-file bicep/main.bicep
 ```
 
 - Optionally give the deployment a name if you want to deploy multiple times:
 ```
-az deployment sub create --location <location> --template-file bicep/main.bicep --name dep-uksouth01
+az deployment sub create --location uksouth --template-file bicep/main.bicep --name dep-uksouth01
 ```
-
-- Set the parameter `<location>` in line with the intended Azure region (eg uksouth, francecentral etc) but note this argument is just the location of the deployment metadata.
 
 - Enter the admin email for the subscription and location when prompted.  When the deployment completes successfully go to step 3.
 
