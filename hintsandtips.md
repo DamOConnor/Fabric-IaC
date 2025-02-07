@@ -14,6 +14,11 @@ az bicep decompile --file main.json
 See here for more info: https://stackoverflow.com/questions/69354469/is-there-a-way-to-generate-a-bicep-file-for-an-existing-azure-resource
 
 
+### Convert an Bicep template to ARM
+
+```
+az bicep build --file la-scale-fabric.bicep
+```
 
 ## Steps for migrating workspaces from one sub to another
 1. Create new external Azure subscription
