@@ -1,7 +1,13 @@
+@description('The admin email - used for Fabric capacity administration')
 param adminEmail string
+
+@description('The name of the Fabric capacity')
 param fabricCapacityName string
+
+@description('The location for the Fabric capacity')
 param location string
 
+@description('The Fabric F-SKU size')
 @allowed([
   'F2'
   'F4'
@@ -17,9 +23,13 @@ param location string
 ])
 param sku string
 
-resource fabricCapacity_res 'Microsoft.Fabric/capacities@2023-11-01' = {
+@description('Tags to apply to the resource')
+param tags object = {}
+
+resource fabricCapacity 'Microsoft.Fabric/capacities@2023-11-01' = {
   name: fabricCapacityName
   location: location
+  tags: tags
   sku: {
     name: sku
     tier: 'Fabric'
@@ -33,4 +43,5 @@ resource fabricCapacity_res 'Microsoft.Fabric/capacities@2023-11-01' = {
   }
 }
 
-output fabricCapacityName string = fabricCapacityName
+output fabricCapacityName string = fabricCapacity.name
+output fabricCapacityId string = fabricCapacity.id
