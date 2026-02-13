@@ -1,4 +1,3 @@
-// Parameters
 @description('The name of the Fabric Capacity')
 param fabricCapacityName string
 
@@ -14,43 +13,45 @@ param resourceGroupName string
 @description('The subscription ID where the resources will be deployed')
 param subscriptionId string
 
-@description('The external ID for the ARM connection')
-param connections_arm_externalid string = '/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.Web/connections/arm'
+@description('The hour (0-23) when the Logic App should pause the Fabric capacity')
+@minValue(0)
+@maxValue(23)
+param pauseHour int = 21
+
+@description('The timezone for the schedule')
+param timezone string = 'GMT Standard Time'
+
+@description('Tags to apply to the resource')
+param tags object = {}
+
+@description('The resource ID of the ARM connection')
+param armConnectionId string
 
 // Logic App resource definition
-resource logicApp_res 'Microsoft.Logic/workflows@2019-05-01' = {
+resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
   name: logicAppName
   location: location
+  tags: tags
   properties: {
-    state: 'Enabled' // The state of the Logic App
+    state: 'Enabled'
     definition: {
-      '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#' // Schema for the Logic App definition
-      contentVersion: '1.0.0.0' // Version of the Logic App definition
+      '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
+      contentVersion: '1.0.0.0'
       parameters: {
         '$connections': {
-          defaultValue: {} // Default value for connections parameter
-          type: 'Object' // Type of the connections parameter
+          defaultValue: {}
+          type: 'Object'
         }
       }
       triggers: {
         Recurrence: {
           recurrence: {
-            interval: 1 // Interval for the recurrence trigger
-            frequency: 'Day'
-            timeZone: 'GMT Standard Time'
-            schedule: {
-              hours: [
-                '21'
-              ]
-            }
-          }
-          evaluatedRecurrence: {
             interval: 1
             frequency: 'Day'
-            timeZone: 'GMT Standard Time'
+            timeZone: timezone
             schedule: {
               hours: [
-                '21'
+                pauseHour
               ]
             }
           }
@@ -122,7 +123,7 @@ resource logicApp_res 'Microsoft.Logic/workflows@2019-05-01' = {
         value: {
           arm: {
             id: '/subscriptions/${subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/arm'
-            connectionId: connections_arm_externalid
+            connectionId: armConnectionId
             connectionName: 'arm'
           }
         }
@@ -131,4 +132,5 @@ resource logicApp_res 'Microsoft.Logic/workflows@2019-05-01' = {
   }
 }
 
-output logicAppName string = logicAppName
+output logicAppName string = logicApp.name
+output logicAppId string = logicApp.id

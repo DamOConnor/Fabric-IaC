@@ -1,87 +1,142 @@
-// Setup
+// Fabric Capacity Deployment with Auto-Pause Logic App
+// Deploys a resource group, Fabric capacity, ARM connection, and Logic App for scheduled pause
 
 targetScope = 'subscription'
 
-@description('The admin email - used in the authorisation for the Logic App')
+@description('The admin email - used for Fabric capacity administration and ARM connection')
 param adminEmail string
 
-@description('Unique guid - to help make resource names (like Fabric Capacity names) unique')
-param guid string = newGuid()
-var uniqueSuffix = toLower(substring(guid, 0, 5))
+@description('The project name - used to derive resource names')
+@minLength(2)
+@maxLength(10)
+param projectName string
 
-@description('The location for all resources deployed in this template')
-param location string
+@description('The Azure region for deployment')
+@allowed([
+  'uksouth'
+  'ukwest'
+  'northeurope'
+  'westeurope'
+  'eastus'
+  'eastus2'
+  'westus'
+  'westus2'
+])
+param region string
 
-//@description('The core name that will be used for resources')
-//param prefix string = 'general'
-
-//@description('The text that will be suffixed to the end of resource names')
-//param postfix string = 'uks'
-
-@description('The Fabric F-SKU size, eg F2, F64 etc')
+@description('The Fabric F-SKU size')
+@allowed([
+  'F2'
+  'F4'
+  'F8'
+  'F16'
+  'F32'
+  'F64'
+  'F128'
+  'F256'
+  'F512'
+  'F1024'
+  'F2048'
+])
 param sku string = 'F2'
 
-// Helper variables for resource names
-//var baseName = '${prefix}-${postfix}${uniqueSuffix}'
-//var resourceGroupName = 'rg-${baseName}'
-//var safeBaseName = '${prefix}${postfix}'
+@description('The hour (0-23) when the Logic App should pause the Fabric capacity')
+@minValue(0)
+@maxValue(23)
+param pauseHour int = 21
 
-// How to create eg rg-fabric-suyi5, fabsuyi5, la-pause-fabsuyi5 ?
-var baseName = '${uniqueSuffix}'
-var resourceGroupName = 'rg-fabric-${uniqueSuffix}'
-var fabricCapacityName = 'fab${baseName}'
-var logicAppName = 'la-pause-fab${baseName}'
+@description('The timezone for the pause schedule')
+param timezone string = 'GMT Standard Time'
 
+@description('Optional suffix for uniqueness. Leave empty for deterministic names, or set to a short random string for lab/multi-attendee use.')
+@maxLength(5)
+param uniqueSuffix string = ''
+
+@description('Tags to apply to all resources')
+param tags object = {}
+
+// Region abbreviation mapping
+var regionAbbreviations = {
+  uksouth: 'uks'
+  ukwest: 'ukw'
+  northeurope: 'neu'
+  westeurope: 'weu'
+  eastus: 'eus'
+  eastus2: 'eus2'
+  westus: 'wus'
+  westus2: 'wus2'
+}
+
+// Derived resource names
+var regionAbbr = regionAbbreviations[region]
+var suffix = empty(uniqueSuffix) ? '' : '-${uniqueSuffix}'
+var safeSuffix = toLower(uniqueSuffix)
+var resourceGroupName = 'rg-${projectName}-${regionAbbr}${suffix}'
+var fabricCapacityName = 'fab${projectName}${regionAbbr}${safeSuffix}'
+var logicAppName = 'la-pause-${projectName}-${regionAbbr}${suffix}'
+
+// Common tags
+var commonTags = union(tags, {
+  project: projectName
+  region: region
+})
 
 // Resource group
-
-resource rg_res 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: resourceGroupName
-  location: location
+  location: region
+  tags: commonTags
 }
 
 // Fabric capacity
-
-module fab_mod './fabric_capacity.bicep' = {
-  name: 'fab'
-  scope: resourceGroup(rg_res.name)
+module fabricCapacity './fabric_capacity.bicep' = {
+  name: 'fabricCapacity'
+  scope: resourceGroup(rg.name)
   params: {
     adminEmail: adminEmail
     fabricCapacityName: fabricCapacityName
-    location: location
+    location: region
     sku: sku
+    tags: commonTags
   }
 }
-
 
 // ARM API Connection
-
-module arm_mod './arm.bicep' = {
-  name: 'arm'
-  scope: resourceGroup(rg_res.name)
+module armConnection './arm_connection.bicep' = {
+  name: 'armConnection'
+  scope: resourceGroup(rg.name)
   params: {
-    adminEmail: adminEmail
-    location: location
+    displayName: adminEmail
+    location: region
     subscriptionId: subscription().subscriptionId
-    tenantId: subscription().tenantId   
+    tenantId: subscription().tenantId
+    tags: commonTags
   }
 }
 
-
-// Logic App
-
-module logicApp_mod './logic_app.bicep' = {
+// Logic App for auto-pause
+module logicApp './logic_app.bicep' = {
   name: 'logicApp'
-  scope: resourceGroup(rg_res.name)
+  scope: resourceGroup(rg.name)
   params: {
     fabricCapacityName: fabricCapacityName
-    location: location
+    location: region
     logicAppName: logicAppName
     resourceGroupName: resourceGroupName
     subscriptionId: subscription().subscriptionId
+    pauseHour: pauseHour
+    timezone: timezone
+    tags: commonTags
+    armConnectionId: armConnection.outputs.connectionId
   }
   dependsOn: [
-    fab_mod
-    arm_mod
+    fabricCapacity
   ]
 }
+
+// Outputs
+output resourceGroupName string = rg.name
+output fabricCapacityName string = fabricCapacity.outputs.fabricCapacityName
+output fabricCapacityId string = fabricCapacity.outputs.fabricCapacityId
+output logicAppName string = logicApp.outputs.logicAppName
+output logicAppId string = logicApp.outputs.logicAppId
