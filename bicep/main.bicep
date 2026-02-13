@@ -1,9 +1,9 @@
 // Fabric Capacity Deployment with Auto-Pause Logic App
-// Deploys a resource group, Fabric capacity, ARM connection, and Logic App for scheduled pause
+// Deploys a resource group, Fabric capacity, and Logic App (with managed identity) for scheduled pause
 
 targetScope = 'subscription'
 
-@description('The admin email - used for Fabric capacity administration and ARM connection')
+@description('The admin email - used for Fabric capacity administration')
 param adminEmail string
 
 @description('The project name - used to derive resource names')
@@ -21,6 +21,7 @@ param projectName string
   'eastus2'
   'westus'
   'westus2'
+  'swedencentral'
 ])
 param region string
 
@@ -65,6 +66,7 @@ var regionAbbreviations = {
   eastus2: 'eus2'
   westus: 'wus'
   westus2: 'wus2'
+  swedencentral: 'swc'
 }
 
 // Derived resource names
@@ -101,20 +103,7 @@ module fabricCapacity './fabric_capacity.bicep' = {
   }
 }
 
-// ARM API Connection
-module armConnection './arm_connection.bicep' = {
-  name: 'armConnection'
-  scope: resourceGroup(rg.name)
-  params: {
-    displayName: adminEmail
-    location: region
-    subscriptionId: subscription().subscriptionId
-    tenantId: subscription().tenantId
-    tags: commonTags
-  }
-}
-
-// Logic App for auto-pause
+// Logic App for auto-pause (uses managed identity)
 module logicApp './logic_app.bicep' = {
   name: 'logicApp'
   scope: resourceGroup(rg.name)
@@ -127,11 +116,20 @@ module logicApp './logic_app.bicep' = {
     pauseHour: pauseHour
     timezone: timezone
     tags: commonTags
-    armConnectionId: armConnection.outputs.connectionId
   }
   dependsOn: [
     fabricCapacity
   ]
+}
+
+// Role assignment - grant Logic App managed identity Contributor on Fabric capacity
+module roleAssignment './role_assignment.bicep' = {
+  name: 'roleAssignment'
+  scope: resourceGroup(rg.name)
+  params: {
+    principalId: logicApp.outputs.logicAppPrincipalId
+    fabricCapacityId: fabricCapacity.outputs.fabricCapacityId
+  }
 }
 
 // Outputs
@@ -140,3 +138,4 @@ output fabricCapacityName string = fabricCapacity.outputs.fabricCapacityName
 output fabricCapacityId string = fabricCapacity.outputs.fabricCapacityId
 output logicAppName string = logicApp.outputs.logicAppName
 output logicAppId string = logicApp.outputs.logicAppId
+output logicAppPrincipalId string = logicApp.outputs.logicAppPrincipalId
