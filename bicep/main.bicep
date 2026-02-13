@@ -48,6 +48,10 @@ param pauseHour int = 21
 @description('The timezone for the pause schedule')
 param timezone string = 'GMT Standard Time'
 
+@description('Optional suffix for uniqueness. Leave empty for deterministic names, or set to a short random string for lab/multi-attendee use.')
+@maxLength(5)
+param uniqueSuffix string = ''
+
 @description('Tags to apply to all resources')
 param tags object = {}
 
@@ -65,9 +69,11 @@ var regionAbbreviations = {
 
 // Derived resource names
 var regionAbbr = regionAbbreviations[region]
-var resourceGroupName = 'rg-${projectName}-${regionAbbr}'
-var fabricCapacityName = 'fab${projectName}${regionAbbr}'
-var logicAppName = 'la-pause-${projectName}-${regionAbbr}'
+var suffix = empty(uniqueSuffix) ? '' : '-${uniqueSuffix}'
+var safeSuffix = toLower(uniqueSuffix)
+var resourceGroupName = 'rg-${projectName}-${regionAbbr}${suffix}'
+var fabricCapacityName = 'fab${projectName}${regionAbbr}${safeSuffix}'
+var logicAppName = 'la-pause-${projectName}-${regionAbbr}${suffix}'
 
 // Common tags
 var commonTags = union(tags, {
