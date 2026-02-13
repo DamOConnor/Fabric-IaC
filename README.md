@@ -6,11 +6,11 @@
 
 ## Introduction
 
-This repo will create a resource group, an F2 **Fabric Capacity** and a **Logic App** to pause the Fabric Capacity in the UK South region.  Fabric SKU and region can be altered in the Bicep if required.
+This repo will create a resource group, an F2 **Fabric Capacity** and a **Logic App** (with managed identity) to pause the Fabric Capacity in the UK South region.  Fabric SKU and region can be altered in the Bicep if required.
 
 ![Fabric IaC](images/fabriciac.png)
 
-The code has been built with external subscriptions in mind but could be adapted for any Azure subscription.
+The Logic App uses a **system-assigned managed identity** with Contributor role on the Fabric capacity to authenticate against the Azure Resource Manager API — no manual authorization step required.
 
 > [!NOTE]
 > The Bicep template (`main.bicep`) contains code to make sure Azure resource names are unique.  If you run the template multiple times you will get multiple resource groups and Fabric Capacities.  Consider deleting resource groups created in error.  
@@ -28,11 +28,10 @@ The code has been built with external subscriptions in mind but could be adapted
 
 ## Prerequisites
 - Azure Subscription
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed (for local / VS Code deployment; not needed for Cloud Shell)
 - Resource Providers enabled for:
   - `Microsoft.Fabric`
   - `Microsoft.Logic`
-
-See [resourceproviders.ps1](utils/resourceproviders.ps1) for code to enable these resource providers.
 
 **NB** Fabric is not currently available in Microsoft Non-prod / fdpo subscriptions.
 
@@ -64,7 +63,7 @@ az login --use-device-code
 ```
 
 - copy the link (normally https://microsoft.com/devicelogin) and paste it into the browser profile you want to use
-- copy the code and paste it into the browser when prompted
+- copy the device code and paste it into the browser when prompted
 
 
 - set the subscription:
@@ -108,19 +107,12 @@ az deployment sub create --location uksouth --template-file bicep/main.bicep --n
 
 - Enter the admin email for the subscription and location when prompted.  When the deployment completes successfully go to step 3.
 
-3. Authorise the arm connection
-- Go to the Azure portal (https://portal.azure.com)
-- Select the resource group just deployed
-- Select the `arm` API connection
-- In the API Connection blade:
-  - Click **General > Edit API Connection**
-  - Click **Authorize**
-  - Click **Save**
+3. Now go to the Logic App and run it.  It should complete successfully and pause the Fabric Capacity.
 
-![Authorise API](images/authoriseapi.png)
+> [!NOTE]
+> The managed identity role assignment may take a few minutes to propagate. If the first run fails with a 403 error, wait a couple of minutes and try again.
 
-4. Now go to the Logic App and run it.  It should complete successfully and pause the Fabric Capacity.
-5. Optionally resume the capacity if you plan to work with it now.
+4. Optionally resume the capacity if you plan to work with it now.
 
 
 ## Completed Deployment

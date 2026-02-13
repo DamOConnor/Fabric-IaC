@@ -24,25 +24,24 @@ param timezone string = 'GMT Standard Time'
 @description('Tags to apply to the resource')
 param tags object = {}
 
-@description('The resource ID of the ARM connection')
-param armConnectionId string
+// ARM REST API base URL for the Fabric capacity
+var armBaseUrl = environment().resourceManager
+var fabricCapacityUri = '${armBaseUrl}subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.Fabric/capacities/${fabricCapacityName}'
 
 // Logic App resource definition
 resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
   name: logicAppName
   location: location
   tags: tags
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     state: 'Enabled'
     definition: {
       '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
       contentVersion: '1.0.0.0'
-      parameters: {
-        '$connections': {
-          defaultValue: {}
-          type: 'Object'
-        }
-      }
+      parameters: {}
       triggers: {
         Recurrence: {
           recurrence: {
@@ -61,34 +60,26 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
       actions: {
         Read_status_of_Fabric_Capacity: {
           runAfter: {}
-          type: 'ApiConnection'
+          type: 'Http'
           inputs: {
-            host: {
-              connection: {
-                name: '@parameters(\'$connections\')[\'arm\'][\'connectionId\']'
-              }
-            }
-            method: 'get'
-            path: '/subscriptions/@{encodeURIComponent(\'${subscriptionId}\')}/resourcegroups/@{encodeURIComponent(\'${resourceGroupName}\')}/providers/@{encodeURIComponent(\'Microsoft.Fabric\')}/@{encodeURIComponent(\'capacities/${fabricCapacityName}\')}'
-            queries: {
-              'x-ms-api-version': '2023-11-01'
+            method: 'GET'
+            uri: '${fabricCapacityUri}?api-version=2023-11-01'
+            authentication: {
+              type: 'ManagedServiceIdentity'
+              audience: armBaseUrl
             }
           }
         }
         Condition_Pause_Fabric_Capacity_if_not_Paused: {
           actions: {
-            Invoke_resource_operation: {
-              type: 'ApiConnection'
+            Suspend_Fabric_Capacity: {
+              type: 'Http'
               inputs: {
-                host: {
-                  connection: {
-                    name: '@parameters(\'$connections\')[\'arm\'][\'connectionId\']'
-                  }
-                }
-                method: 'post'
-                path: '/subscriptions/@{encodeURIComponent(\'${subscriptionId}\')}/resourcegroups/@{encodeURIComponent(\'${resourceGroupName}\')}/providers/@{encodeURIComponent(\'Microsoft.Fabric\')}/@{encodeURIComponent(\'capacities/${fabricCapacityName}\')}/@{encodeURIComponent(\'suspend\')}'
-                queries: {
-                  'x-ms-api-version': '2023-11-01'
+                method: 'POST'
+                uri: '${fabricCapacityUri}/suspend?api-version=2023-11-01'
+                authentication: {
+                  type: 'ManagedServiceIdentity'
+                  audience: armBaseUrl
                 }
               }
             }
@@ -118,19 +109,10 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
       }
       outputs: {}
     }
-    parameters: {
-      '$connections': {
-        value: {
-          arm: {
-            id: '/subscriptions/${subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/arm'
-            connectionId: armConnectionId
-            connectionName: 'arm'
-          }
-        }
-      }
-    }
+    parameters: {}
   }
 }
 
 output logicAppName string = logicApp.name
 output logicAppId string = logicApp.id
+output logicAppPrincipalId string = logicApp.identity.principalId
